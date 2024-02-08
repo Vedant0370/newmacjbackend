@@ -1,27 +1,29 @@
-const express = require('express')
-require('dotenv').config()
+const express = require("express");
+const cors = require("cors");
+const mongoose = require("mongoose");
+const uploadRoutes = require("./routes/TemplateRoutes");
+require("dotenv").config();
 
-const mongoose = require('mongoose')
+const app = express();
+app.use(cors());
+app.use(express.json());
 
+const PORT = 7000;
 
-const app = express()
+mongoose
+  .connect(process.env.MONGODB_URL, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+  })
+  .then(() => {
+    console.log("Connected to MongoDB");
+  })
+  .catch((e) => {
+    console.log(e);
+  });
 
-const PORT = process.env.PORT || 70000
+app.use("/api", uploadRoutes);
 
-
-mongoose.connect( process.env.MONGODB_URL)
-.then(()=>{
-    console.log("connected to mongodb ")
-
-})
-.catch((e)=>{
-    
-    console.log(e)
-})
-
-
-
-
-app.listen(PORT , ()=>{
-    console.log(`server is running on ${PORT} `)
-})
+app.listen(PORT, () => {
+  console.log(`Server is running on ${PORT}`);
+});
