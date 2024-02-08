@@ -53,8 +53,19 @@ const DeleteTemp = async (req, res) => {
   }
 };
 
+const getById = async (req, res) => {
+  try {
+    const tempId = req.params.tempId;
+    const temp = await Template.findById(tempId);
+    res.status(200).json(response(temp, "success", null));
+  } catch (error) {
+    res.status(500).json(response(null, "error", error.message));
+  }
+};
+
 module.exports = {
   uploadFile,
   getAllTemplate,
   DeleteTemp,
+  getById,
 };
