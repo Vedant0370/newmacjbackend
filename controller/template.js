@@ -13,6 +13,7 @@ const uploadFile = async (req, res) => {
     fileName: uploadedFile.filename,
     filePath: path.join(__dirname, "../tpz", uploadedFile.filename),
   };
+  console.log(fileInfo);
 
   try {
     const templateInstance = new Template({
