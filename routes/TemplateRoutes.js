@@ -9,8 +9,8 @@ router.post(
   upload.single("tpz"),
   uploadController.uploadFile
 );
-router.get("/templates", uploadController.getAllTemplate);
-router.delete("/template/:tempId", uploadController.DeleteTemp);
-router.get("/template/:tempId", uploadController.getById);
+router.get("/", uploadController.getAllTemplate);
+router.delete("/:tempId", uploadController.DeleteTemp);
+router.get("/:tempId", uploadController.getById);
 
 module.exports = router;

@@ -2,13 +2,18 @@ const express = require("express");
 const cors = require("cors");
 const mongoose = require("mongoose");
 const uploadRoutes = require("./routes/TemplateRoutes");
+const UserRoutes = require("./routes/UserRoutes");
 require("dotenv").config();
 
 const app = express();
 app.use(cors());
 app.use(express.json());
 
-const PORT = 7000;
+const PORT = process.env.PORT;
+const apiRouter = express.Router();
+
+apiRouter.use("/user", UserRoutes);
+apiRouter.use("/template", uploadRoutes);
 
 mongoose
   .connect(process.env.MONGODB_URL, {
@@ -22,7 +27,7 @@ mongoose
     console.log(e);
   });
 
-app.use("/api", uploadRoutes);
+app.use("/api", apiRouter);
 
 app.listen(PORT, () => {
   console.log(`Server is running on ${PORT}`);
