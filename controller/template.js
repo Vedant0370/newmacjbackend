@@ -11,7 +11,8 @@ const uploadFile = async (req, res) => {
 
   const fileInfo = {
     fileName: uploadedFile.filename,
-    filePath: path.join(__dirname, "../tpz", uploadedFile.filename),
+    // Constructing the file path using the API link
+    filePath: `https://macj-backend.onrender.com/tpz/${uploadedFile.filename}`,
   };
   console.log(fileInfo);
 
@@ -33,6 +34,7 @@ const uploadFile = async (req, res) => {
       .json(response(null, "Error saving template", error.message));
   }
 };
+
 
 const getAllTemplate = async (req, res) => {
   try {
