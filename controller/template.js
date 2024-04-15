@@ -3,32 +3,40 @@ const Template = require("../model/TempModel");
 const response = require("../utils/response");
 
 const uploadFile = async (req, res) => {
-  const uploadedFile = req.file;
-
-  if (!uploadedFile) {
-    return res.status(400).send("No file uploaded");
-  }
-
-  const fileInfo = {
-    fileName: uploadedFile.filename,
-    // Constructing the file path using the API link
-    filePath: `https://macj-backend.onrender.com/tpz/${uploadedFile.filename}`,
-  };
-  console.log(fileInfo);
-
   try {
+    // Multer middleware will handle file upload and store it in req.file
+    const uploadedFile = req.file;
+
+    // Check if file is uploaded
+    if (!uploadedFile) {
+      return res.status(400).send("No file uploaded");
+    }
+
+    // Create fileInfo object
+    const fileInfo = {
+      fileName: uploadedFile.filename,
+      // Constructing the file path using the API link
+      filePath: `https://macj-backend.onrender.com/tpz/${uploadedFile.filename}`,
+    };
+
+    console.log(fileInfo);
+
+    // Create a new Template instance with data from request body and fileInfo
     const templateInstance = new Template({
       TemplateName: req.body.TemplateName,
       description: req.body.description,
       filePath: fileInfo.filePath,
     });
 
+    // Save the Template instance to the database
     const savedTemplate = await templateInstance.save();
 
     console.log("Template saved:", savedTemplate);
-    res.status(201).json(response(savedTemplate, "template is created", null));
+    // Respond with success message
+    res.status(201).json(response(savedTemplate, "Template is created", null));
   } catch (error) {
     console.error("Error saving template:", error);
+    // Respond with error message
     res
       .status(500)
       .json(response(null, "Error saving template", error.message));
