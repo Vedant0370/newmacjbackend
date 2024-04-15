@@ -7,6 +7,7 @@ const multer = require("multer");
 const path = require("path");
 const Template = require("./model/TempModel");
 const response = require("./utils/response");
+const InpectionRoutes = require("./routes/InpectionRoutes"); 
 require("dotenv").config();
 
 const app = express();
@@ -27,6 +28,7 @@ const apiRouter = express.Router();
 
 apiRouter.use("/user", UserRoutes);
 apiRouter.use("/template", uploadRoutes);
+apiRouter.use("/inspection", InpectionRoutes);
 
 // Serve static files from the uploads directory
 app.use("/public/uploads", express.static(path.join(__dirname, "public/uploads")));
@@ -72,10 +74,7 @@ app.post("/api/template/upload", upload.fields([{ name: "pdf" }]), async (req, r
 })
 
 mongoose
-  .connect(process.env.MONGODB_URL, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-  })
+  .connect(process.env.MONGODB_URL)
   .then(() => {
     console.log("Connected to MongoDB");
   })
