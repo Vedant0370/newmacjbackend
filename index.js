@@ -1,19 +1,26 @@
+//imports 
 const express = require("express");
 const cors = require("cors");
 const mongoose = require("mongoose");
-const uploadRoutes = require("./routes/TemplateRoutes");
-const UserRoutes = require("./routes/UserRoutes");
 const multer = require("multer");
 const path = require("path");
-const Template = require("./model/TempModel");
 const response = require("./utils/response");
-const InpectionRoutes = require("./routes/InpectionRoutes"); 
 require("dotenv").config();
 
+
+//routes imports 
+const uploadRoutes = require("./routes/TemplateRoutes");
+const UserRoutes = require("./routes/UserRoutes");
+const Template = require("./model/TempModel");
+const InpectionRoutes = require("./routes/InpectionRoutes"); 
+
+//declearation 
 const app = express();
 app.use(cors());
 app.use(express.json());
+const apiRouter = express.Router();
 
+//multer 
 const storage = multer.diskStorage({
   destination: path.join(__dirname, "./public/uploads/"),
   filename: function (req, file, cb) {
@@ -24,8 +31,9 @@ const storage = multer.diskStorage({
 const upload = multer({ storage: storage });
 
 const PORT = process.env.PORT;
-const apiRouter = express.Router();
 
+
+//routes 
 apiRouter.use("/user", UserRoutes);
 apiRouter.use("/template", uploadRoutes);
 apiRouter.use("/inspection", InpectionRoutes);
@@ -73,6 +81,8 @@ app.post("/api/template/upload", upload.fields([{ name: "pdf" }]), async (req, r
   }
 })
 
+
+//connection
 mongoose
   .connect(process.env.MONGODB_URL)
   .then(() => {
@@ -84,6 +94,8 @@ mongoose
 
 app.use("/api", apiRouter);
 
+
+//start server 
 app.listen(PORT, () => {
   console.log(`Server is running on ${PORT}`);
 });
