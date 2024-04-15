@@ -13,6 +13,7 @@ const uploadRoutes = require("./routes/TemplateRoutes");
 const UserRoutes = require("./routes/UserRoutes");
 const Template = require("./model/TempModel");
 const InpectionRoutes = require("./routes/InpectionRoutes"); 
+const inspection = require("./model/InspectionModel");
 
 //declearation 
 const app = express();
@@ -102,7 +103,7 @@ app.post("/api/inspection/upload" , upload.fields([{ name: "pdf" }
     console.log(fileInfo);
 
     // Create a new Template instance with data from request body and fileInfo
-    const InspectionInstace = new Template({
+    const InspectionInstace = new inspection({
       clientName : clientName  ,
       email : email || null ,
       phone : phone || null ,
