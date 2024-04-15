@@ -19,6 +19,11 @@ const inpectionSchema = mongoose.Schema({
         type : String,
 
     }
+    ,
+    pdf:{
+        type : String,
+        required : true
+    }
 
 
 })
