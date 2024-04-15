@@ -5,7 +5,7 @@ const response = require("../utils/response");
 const uploadFile = async (req, res) => {
   try {
     // Multer middleware will handle file upload and store it in req.file
-    const uploadedFile = req.file;
+    const uploadedFile = req.files.pdf ;
 
     // Check if file is uploaded
     if (!uploadedFile) {
@@ -15,8 +15,7 @@ const uploadFile = async (req, res) => {
     // Create fileInfo object
     const fileInfo = {
       fileName: uploadedFile.filename,
-      // Constructing the file path using the server's URL and the path to the uploaded file
-      filePath: `https://macj-backend.onrender.com/tpz/${uploadedFile.filename}`,
+    filePath: `http://localhost:7000/public/uploads/${req.files.pdf[0].filename}`
     };
 
     console.log(fileInfo);
@@ -25,7 +24,7 @@ const uploadFile = async (req, res) => {
     const templateInstance = new Template({
       TemplateName: req.body.TemplateName,
       description: req.body.description,
-      filePath: fileInfo.filePath,
+      pdf : fileInfo.filePath,
     });
 
     // Save the Template instance to the database

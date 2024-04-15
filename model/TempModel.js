@@ -8,7 +8,7 @@ const TemplateSchema = new mongoose.Schema({
     type: String,
   },
 
-  filePath: {
+  pdf : {
     type: String,
     required: true,
   },
