@@ -9,14 +9,16 @@ require("dotenv").config();
 //function import 
 const response = require("./utils/response");
 
-
+//models imports
+const Template = require("./model/TempModel");
+const inspection = require("./model/InspectionModel");
 
 //routes imports 
 const uploadRoutes = require("./routes/TemplateRoutes");
 const UserRoutes = require("./routes/UserRoutes");
-const Template = require("./model/TempModel");
 const InpectionRoutes = require("./routes/InpectionRoutes"); 
-const inspection = require("./model/InspectionModel");
+const ExecutiveRoutes = require("./routes/ExecutiveRoutes");
+
 
 //declearation 
 const app = express();
@@ -41,6 +43,7 @@ const upload = multer({ storage: storage });
 apiRouter.use("/user", UserRoutes);
 apiRouter.use("/template", uploadRoutes);
 apiRouter.use("/inspection", InpectionRoutes);
+apiRouter.use("/executive", ExecutiveRoutes);
 
 
 
