@@ -1,10 +1,9 @@
 const express = require("express");
 const uploadController = require("../controller/template");
-const upload = require("../middleware/multer");
+
 
 const router = express.Router();
 
-// router.post(
 //   "/uploadTemplate",
 //   upload.fields([
 //     { name: "pdf", maxCount: 1 },
