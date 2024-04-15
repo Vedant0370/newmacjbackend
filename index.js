@@ -4,8 +4,11 @@ const cors = require("cors");
 const mongoose = require("mongoose");
 const multer = require("multer");
 const path = require("path");
-const response = require("./utils/response");
 require("dotenv").config();
+
+//function import 
+const response = require("./utils/response");
+
 
 
 //routes imports 
@@ -20,6 +23,7 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 const apiRouter = express.Router();
+const PORT = process.env.PORT;
 
 //multer 
 const storage = multer.diskStorage({
@@ -31,13 +35,15 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage: storage });
 
-const PORT = process.env.PORT;
 
 
 //routes 
 apiRouter.use("/user", UserRoutes);
 apiRouter.use("/template", uploadRoutes);
 apiRouter.use("/inspection", InpectionRoutes);
+
+
+
 
 // Serve static files from the uploads directory
 app.use("/public/uploads", express.static(path.join(__dirname, "public/uploads")));
