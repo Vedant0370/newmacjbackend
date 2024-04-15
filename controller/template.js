@@ -15,8 +15,8 @@ const uploadFile = async (req, res) => {
     // Create fileInfo object
     const fileInfo = {
       fileName: uploadedFile.filename,
-      // Constructing the file path using the API link
-      filePath: path.join(__dirname, "../tpz", uploadedFile.filename),
+      // Constructing the file path using the server's URL and the path to the uploaded file
+      filePath: `https://macj-backend.onrender.com/tpz/${uploadedFile.filename}`,
     };
 
     console.log(fileInfo);
