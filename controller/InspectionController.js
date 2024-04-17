@@ -10,16 +10,18 @@ const getAllInpection = async(req ,res )=>{
     }
 }
 
-const deleteInspection = async(req, res)=>{
+const deleteInspection = async (req, res) => {
     try {
-        const inpectionId = req.params.inpectionId
-        const inpection = await Inpection.findByIdAndDelete(inpectionId)
-        res.status(200).json(response(inpection, "deleted successfully ", null))
-
+        const { inspectionIds } = req.body;
+        
+        // Use deleteMany method to delete multiple inspections based on IDs
+        const deleteManyInspection = await Inpection.deleteMany({ _id: { $in: inspectionIds } });
+        
+        res.status(200).json(response(deleteManyInspection, "success", null));
     } catch (error) {
-        res.status(500).json(response(null, "error", error.message))
+        res.status(500).json(response(null, "error", error.message));
     }
-}
+};
 
 
 module.exports = {

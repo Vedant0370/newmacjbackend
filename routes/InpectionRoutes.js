@@ -5,7 +5,7 @@ const router = express.Router();
 
 
 router.get("/" , inpectionController.getAllInpection)
-router.delete("/:inpectionId" , inpectionController.deleteInspection)
+router.delete("/" , inpectionController.deleteInspection)
 
 
 module.exports = router;
