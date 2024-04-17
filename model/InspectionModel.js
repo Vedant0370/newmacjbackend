@@ -20,6 +20,11 @@ const inpectionSchema = mongoose.Schema({
 
     }
     ,
+    InpectionDate : {
+        type : Date,
+        default : Date.now
+    }
+    ,
     pdf:{
         type : String,
         required : true
