@@ -94,7 +94,7 @@ app.post("/api/template/upload", upload.fields([{ name: "pdf" }]), async (req, r
 app.post("/api/inspection/upload" , upload.fields([{ name: "pdf" }
 ]), async (req, res) => {
   try {
-    const {clientName , email , phone , address ,InpectionDate } = req.body 
+    const {clientName , email , phone , address ,InpectionDate ,InspectionName} = req.body 
     // Multer middleware will handle file upload and store it in req.file
     const uploadedFile = req.files.pdf;
 
@@ -113,6 +113,8 @@ app.post("/api/inspection/upload" , upload.fields([{ name: "pdf" }
 
     // Create a new Template instance with data from request body and fileInfo
     const InspectionInstace = new inspection({
+      InspectionName : InspectionName || "",
+
       clientName : clientName  ,
       email : email || null ,
       phone : phone || null ,
