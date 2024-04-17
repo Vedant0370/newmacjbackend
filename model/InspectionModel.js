@@ -1,6 +1,9 @@
 const mongoose = require('mongoose');
 
 const inpectionSchema = mongoose.Schema({
+    InspectionName : {
+        type : String,
+    },
 
     clientName : {
         type : String,
