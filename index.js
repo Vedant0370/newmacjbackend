@@ -106,7 +106,7 @@ app.post("/api/inspection/upload" , upload.fields([{ name: "pdf" }
     // Create fileInfo object
     const fileInfo = {
       fileName: uploadedFile.filename,
-      filePath: `https://macj-backend.onrender.com/public/uploads/${req.files.pdf[0].filename}`
+      filePath: `http://localhost:7000/public/uploads/${req.files.pdf[0].filename}`
     };
 
     console.log(fileInfo);
