@@ -55,7 +55,8 @@ app.post("/api/template/upload", upload.fields([{ name: "pdf" }]), async (req, r
   try {
     // Multer middleware will handle file upload and store it in req.file
     const uploadedFile = req.files.pdf;
-
+    console.log(uploadedFile);
+    console.log(req.body);
     // Check if file is uploaded
     if (!uploadedFile) {
       return res.status(400).send("No file uploaded");

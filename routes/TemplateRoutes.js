@@ -49,7 +49,7 @@ const router = express.Router();
 //   }
 // );
 router.get("/", uploadController.getAllTemplate);
-router.delete("/:tempId", uploadController.DeleteTemp);
+router.delete("/", uploadController.DeleteTemp);
 router.get("/:tempId", uploadController.getById);
 
 module.exports = router;

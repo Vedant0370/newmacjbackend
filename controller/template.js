@@ -13,13 +13,15 @@ const getAllTemplate = async (req, res) => {
 };
 
 const DeleteTemp = async (req, res) => {
-  try {
-    const tempId = req.params.tempId;
-    const temp_delete = await Template.findByIdAndDelete(tempId);
-    res.status(200).json(response(temp_delete, "success", null));
-  } catch (error) {
-    res.status(500).json(response(null, "error", error.message));
-  }
+    try {
+      const {templateIds} = req.body
+      const deleteManyTemplate = await Template.deleteMany({_id: {$in : templateIds}}) 
+      res.status(200).json(response(deleteManyTemplate, "success", null));
+      
+    } catch (error) {
+      res.status(500).json(response(null, "error", error.message));
+      
+    }
 };
 
 const getById = async (req, res) => {
