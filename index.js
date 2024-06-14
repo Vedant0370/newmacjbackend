@@ -3,10 +3,10 @@ const express = require("express");
 const cors = require("cors");
 const mongoose = require("mongoose");
 const multer = require("multer");
-const path = require("path");
+const fs = require('fs');
+const path = require('path');
+const http = require('http');
 require("dotenv").config();
-const fs = require("fs")
-const { v4: uuidv4 } = require('uuid');
 
 
 //function import 
@@ -20,7 +20,7 @@ const HZFLink = require('./model/HzfFileUpload');
 //routes imports 
 const uploadRoutes = require("./routes/TemplateRoutes");
 const UserRoutes = require("./routes/UserRoutes");
-const InpectionRoutes = require("./routes/InpectionRoutes"); 
+const InpectionRoutes = require("./routes/InpectionRoutes");
 const ExecutiveRoutes = require("./routes/ExecutiveRoutes");
 
 
@@ -30,17 +30,6 @@ app.use(cors());
 app.use(express.json());
 const apiRouter = express.Router();
 const PORT = process.env.PORT;
-
-//multer 
-const storage = multer.diskStorage({
-  destination: path.join(__dirname, "./public/uploads/"),
-  filename: function (req, file, cb) {
-    cb(null, file.originalname);
-  },
-});
-
-const upload = multer({ storage: storage });
-
 
 
 //routes 
@@ -52,18 +41,93 @@ apiRouter.use("/executive", ExecutiveRoutes);
 
 
 
-const uploadDirectory = path.join(__dirname, '../public/uploads');
-// Ensure the uploads directory exists
+//multer for file & image upload
+const uploadDirectory = path.join(__dirname, 'public/uploads');
+
 if (!fs.existsSync(uploadDirectory)) {
   fs.mkdirSync(uploadDirectory, { recursive: true });
 }
+
+const storage = multer.diskStorage({
+  destination: path.join(__dirname, './public/uploads/'),
+  filename: function (req, file, cb) {
+    cb(null, file.originalname);
+  },
+});
+
+const upload = multer({ storage: storage });
+
 app.use('/public/uploads', express.static(uploadDirectory));
-// Serve static files from the uploads directory
 app.use("/public/uploads", express.static(path.join(__dirname, "public/uploads")));
 
 
+app.post('/api/newinspection/upload', async (req, res) => {
+  try {
+    const {
+      url,
+      originalFileName,
+      inspectionName,
+      clientName,
+      inspectionAddress,
+      date,
+    } = req.body;
+
+    if (!url || !originalFileName) {
+      return res.status(400).json({ message: 'URL or originalFileName not provided' });
+    }
+
+    // Extract base64 data from the data URL
+    const base64Data = url.replace(/^data:application\/octet-stream;base64,/, '');
+
+    // Generate the file name based on originalFileName
+    const fileName = `${originalFileName}.hzf`;
+    const filePath = path.join(uploadDirectory, fileName);
+
+    // Save the file
+    fs.writeFileSync(filePath, base64Data, 'base64');
 
 
+    // handle validation for the required fields 
+    if(!inspectionName){
+      return res.status(404).json({ message: HZFLink.schema.paths.inspectionName.options.required[1] })
+    }
+    if(!clientName){
+      return res.status(404).json({ message: HZFLink.schema.paths.clientName.options.required[1] })
+    }
+    if(!inspectionAddress){
+      return res.status(404).json({ message: HZFLink.schema.paths.inspectionAddress.options.required[1] })
+    }
+    if(!date){
+      return res.status(404).json({ message: HZFLink.schema.paths.date.options.required[1] })
+    }
+    // Save the file path and original file name to the database
+    const newFile = new HZFLink({
+      url: `http://localhost:${PORT}/public/uploads/${fileName}`,
+      originalFileName: originalFileName,
+      inspectionName: inspectionName,
+      clientName: clientName,
+      inspectionAddress: inspectionAddress,
+      date: date,
+    });
+    await newFile.save(); // Save to MongoDB
+
+    // Return success response with the file details
+    res.status(200).json({ message: 'File uploaded successfully', file: newFile });
+  } catch (e) {
+    console.error(e);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+});
+
+app.get('/api/inspection', async (req, res) => {
+  try {
+    const files = await HZFLink.find({}, '-__v'); // Exclude __v field from response
+    res.json(files);
+  } catch (e) {
+    console.error(e);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+});
 
 app.post("/api/template/upload", upload.fields([{ name: "pdf" }]), async (req, res) => {
   try {
@@ -104,12 +168,12 @@ app.post("/api/template/upload", upload.fields([{ name: "pdf" }]), async (req, r
       .status(500)
       .json(response(null, "Error saving template", error.message));
   }
-})
+});
 
-app.post("/api/inspection/upload" , upload.fields([{ name: "pdf" }
+app.post("/api/inspection/upload", upload.fields([{ name: "pdf" }
 ]), async (req, res) => {
   try {
-    const {clientName , email , phone , address ,InpectionDate ,InspectionName} = req.body 
+    const { clientName, email, phone, address, InpectionDate, InspectionName } = req.body
     // Multer middleware will handle file upload and store it in req.file
     const uploadedFile = req.files.pdf;
 
@@ -128,13 +192,13 @@ app.post("/api/inspection/upload" , upload.fields([{ name: "pdf" }
 
     // Create a new Template instance with data from request body and fileInfo
     const InspectionInstace = new inspection({
-      InspectionName : InspectionName || "",
+      InspectionName: InspectionName || "",
 
-      clientName : clientName  ,
-      email : email || null ,
-      phone : phone || null ,
-      address : address || null ,
-      InpectionDate : InpectionDate  ,
+      clientName: clientName,
+      email: email || null,
+      phone: phone || null,
+      address: address || null,
+      InpectionDate: InpectionDate,
       pdf: fileInfo.filePath,
     });
 
@@ -153,7 +217,7 @@ app.post("/api/inspection/upload" , upload.fields([{ name: "pdf" }
       .json(response(null, "Error saving template", error.message));
   }
 }
-)
+);
 
 // app.post('/api/newinspection/upload', async (req, res) => {
 //   try {
@@ -220,51 +284,10 @@ app.post("/api/inspection/upload" , upload.fields([{ name: "pdf" }
 
 
 
-app.get("/api/abc", async(req, res)=>{
-
-  try{
-    const getAbc  = await HZFLink.find()
-    res.status(201).json(getAbc)
-
-  }catch(e){
-    res.status(500).json({message : "Internl error"})
-  }
-})
-
-app.post('/api/newinspection/upload', async (req, res) => {
-  try {
-    const { url, originalFileName } = req.body;
-
-    if (!url || !originalFileName) {
-      return res.status(400).json({ message: 'URL or originalFileName not provided' });
-    }
-
-    // Extract base64 data from the data URL
-    const base64Data = url.replace(/^data:application\/octet-stream;base64,/, '');
-
-    // Generate the file name based on originalFileName
-    const fileName = `${originalFileName}.hzf`; // Using originalFileName directly, adjust this as per your naming conventions
-    const filePath = path.join(uploadDirectory, fileName);
-
-    // Save the file
-    fs.writeFileSync(filePath, base64Data, 'base64');
-
-    // Save the file path and original file name to the database
-    const newFile = new HZFLink({
-      url: `http://localhost:7000/public/uploads/${fileName}`,
-      originalFileName: originalFileName // Save the original file name to the database
-    });
-    await newFile.save();
-
-    res.status(200).json({ message: 'File uploaded successfully', link: newFile.url });
-  } catch (e) {
-    console.error(e);
-    res.status(500).json({ message: 'Internal server error' });
-  }
-});
-
 
 //connection
+
+
 
 mongoose
   .connect(process.env.MONGODB_URL)
