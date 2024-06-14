@@ -6,12 +6,15 @@ const multer = require("multer");
 const path = require("path");
 require("dotenv").config();
 
+const fs = require("fs")
+
 //function import 
 const response = require("./utils/response");
 
 //models imports
 const Template = require("./model/TempModel");
 const inspection = require("./model/InspectionModel");
+const HZFLink = require('./model/HzfFileUpload');
 
 //routes imports 
 const uploadRoutes = require("./routes/TemplateRoutes");
@@ -141,8 +144,73 @@ app.post("/api/inspection/upload" , upload.fields([{ name: "pdf" }
 }
 )
 
+app.post('/api/newinspection/upload', async (req, res) => {
+  try {
+      const { url } = req.body;
+
+      if (!url) {
+          return res.status(400).json({ message: 'No URL provided' });
+      }
+
+      // Extract base64 data from the data URL
+      const base64Data = url.replace(/^data:application\/octet-stream;base64,/, '');
+
+      // Define the file path
+      const fileName = `inspection_${Date.now()}.hzf`;
+      const filePath = path.join(__dirname, 'public/uploads', fileName);
+
+      // Save the file
+      fs.writeFileSync(filePath, base64Data, 'base64');
+
+      // Save the file path to the database
+      const newFile = new HZFLink({ url: `http://localhost:7000/public/uploads/${fileName}` });
+      await newFile.save();
+
+      res.status(200).json({ message: 'File uploaded successfully', link: newFile.url });
+  } catch (e) {
+      console.error(e);
+      res.status(500).json({ message: 'Internal server error' });
+  }
+});
+
+app.get("/api/abc", async(req, res)=>{
+
+  try{
+    const getAbc  = await HZFLink.find()
+    res.status(201).json(getAbc)
+
+  }catch(e){
+    res.status(500).json({message : "Internl error"})
+  }
+})
+
+// app.post('/api/newinspection/upload', async (req, res) => {
+//   try {
+//       const { pdf } = req.body;
+
+//       // Extract base64 data from the data URL
+//       const base64Data = pdf.replace(/^data:application\/octet-stream;base64,/, '');
+
+//       // Define the file path
+//       const fileName = `inspection_${Date.now()}.hzf`;
+//       const filePath = path.join(__dirname, 'public/upload', fileName);
+
+//       // Save the file
+//       fs.writeFileSync(filePath, base64Data, 'base64');
+
+//       // Save the link to the database
+//       const newFile = new HZFLink({ hzfLink: `/upload/${fileName}` });
+//       await newFile.save();
+
+//       res.status(200).json({ message: 'File uploaded successfully', link: newFile.hzfLink });
+//   } catch (e) {
+//       console.error(e);
+//       res.status(500).json({ message: 'Internal server error' });
+//   }
+// });
 
 //connection
+
 mongoose
   .connect(process.env.MONGODB_URL)
   .then(() => {
@@ -154,8 +222,7 @@ mongoose
 
 app.use("/api", apiRouter);
 
-
 //start server 
 app.listen(PORT, () => {
-  console.log(`Server is running on ${PORT}`);
+  console.log(`Server is running on http://localhost:${PORT}`);
 });
