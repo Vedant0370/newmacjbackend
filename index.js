@@ -66,10 +66,10 @@ app.post('/api/newinspection/upload', async (req, res) => {
     const {
       url,
       originalFileName,
-      inspectionName,
+      // inspectionName,
       clientName,
       inspectionAddress,
-      date,
+      // date,
     } = req.body;
 
     if (!url || !originalFileName) {
@@ -88,26 +88,26 @@ app.post('/api/newinspection/upload', async (req, res) => {
 
 
     // handle validation for the required fields 
-    if(!inspectionName){
-      return res.status(404).json({ message: HZFLink.schema.paths.inspectionName.options.required[1] })
-    }
+    // if(!inspectionName){
+    //   return res.status(404).json({ message: HZFLink.schema.paths.inspectionName.options.required[1] })
+    // }
     if(!clientName){
       return res.status(404).json({ message: HZFLink.schema.paths.clientName.options.required[1] })
     }
     if(!inspectionAddress){
       return res.status(404).json({ message: HZFLink.schema.paths.inspectionAddress.options.required[1] })
     }
-    if(!date){
-      return res.status(404).json({ message: HZFLink.schema.paths.date.options.required[1] })
-    }
+    // if(!date){
+    //   return res.status(404).json({ message: HZFLink.schema.paths.date.options.required[1] })
+    // }
     // Save the file path and original file name to the database
     const newFile = new HZFLink({
       url: `http://localhost:${PORT}/public/uploads/${fileName}`,
       originalFileName: originalFileName,
-      inspectionName: inspectionName,
+      // inspectionName: inspectionName,
       clientName: clientName,
       inspectionAddress: inspectionAddress,
-      date: date,
+      // date: date,
     });
     await newFile.save(); // Save to MongoDB
 
