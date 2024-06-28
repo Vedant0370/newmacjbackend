@@ -21,7 +21,7 @@ const router = express.Router();
 //       // Create fileInfo object
 //       const fileInfo = {
 //         fileName: uploadedFile.filename,
-//       filePath: `http://localhost:7000/public/uploads/${req.files.pdf[0].filename}`
+//       filePath: `https://node-backend.macj-abuyerschoice.com/public/uploads/${req.files.pdf[0].filename}`
 //       };
   
 //       console.log(fileInfo);
