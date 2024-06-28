@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+const mongoose = require("mongoose");
 
 const hzfFileUploadSchema = new mongoose.Schema({
     url: {
@@ -24,7 +24,6 @@ const hzfFileUploadSchema = new mongoose.Schema({
 
     });
 
-
-const HZFLink = mongoose.model('HZFLink', hzfFileUploadSchema);
+const HZFLink = mongoose.model("HZFLink", hzfFileUploadSchema);
 
 module.exports = HZFLink;
